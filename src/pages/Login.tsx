@@ -1,23 +1,19 @@
 import React, { useState, useEffect } from "react";
-import axios from 'axios';
 import { Link, useNavigate } from "react-router-dom";
 import { useUser } from "../components/UserContext";
-
+import apiClient from "../service/apiClient";
 
 const Login: React.FC = () => {
     const[error, setError] = useState<string>('');
-
-    const{ setUserSession } = useUser();
-
-    const[user, setSession] = useState<{user_id?: string, id?: string, user_type?: string, token: string | null} | null>(null);
+    const{user,  setUserSession} = useUser();
     const[id, setId] = useState<string>('');
     const[password, setPassword] = useState<string>('');
     const[loading, isLoading] = useState<boolean>(false);
     const navigate = useNavigate();
 
     const setToken = (user_id: string, id: string, user_type: string) => {
-        axios.post(
-            "/api",
+        apiClient.post(
+            "/api/v1/service",
             {
                 Body: {
                     user_id: user_id,
@@ -34,10 +30,10 @@ const Login: React.FC = () => {
             })
             .then(response => {
                 setUserSession({
-                    user_id: "",
-                    id: "",
-                    user_type: "",
-                    token: response.data.Body,
+                    user_id: user_id,
+                    id: id,
+                    user_type: user_type,
+                    token: response.data,
                 });
             })
             .catch(err => {
@@ -49,10 +45,10 @@ const Login: React.FC = () => {
         setError('');
         isLoading(true);
 
-        axios.post(
-            "/api",
+        apiClient.post(
+            "/api/v1/service",
             {
-                "Body": {
+                Body: {
                     id: id,
                     password: password
                 }
@@ -65,20 +61,25 @@ const Login: React.FC = () => {
                 },
             })
             .then(response => {
-                console.log("요청 성공");
-                const responseBody = response.data.Body;
-                console.log(responseBody);
-                setUserSession({
-                    user_id: responseBody.user_id || '',
-                    id: responseBody.id || '',
-                    user_type: responseBody.user_type || '',
-                    token: ''
-                });
-                setToken(responseBody.user_id, responseBody.id, responseBody.user_type);
-                navigate("/");
+                const responseBody = response.data;
+                if(responseBody !== "")
+                {
+                    setUserSession({
+                        user_id: responseBody.user_id || '',
+                        id: responseBody.id || '',
+                        user_type: responseBody.user_type || '',
+                        token: ''
+                    });
+                    setToken(responseBody.user_id, responseBody.id, responseBody.user_type);
+                    navigate("/");
+                }
+                else
+                {
+                    setError("유효하지 않은 사용자 정보입니다.");
+                }
             })
             .catch(err => {
-                setError("유효하지 않은 사용자 정보입니다.");
+                console.error("Error : ", err);
             })
             .finally(() => {
                 isLoading(false);

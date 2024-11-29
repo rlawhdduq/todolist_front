@@ -12,12 +12,12 @@ export default defineConfig({
     hmr: {
       protocol: 'ws', // HMR을 WebSocket으로 활성화
     },
-    proxy: {
-      "/api": {
-        target: "http://127.0.0.1:8988",
-        changeOrigin: true,
-        rewrite: (path) => path.replace(/^\/api/, '/api/v1/service'),
-      }
-    }
+    // proxy: {
+    //   "/api": {
+    //     target: "http://127.0.0.1:8988",
+    //     changeOrigin: true,
+    //     rewrite: (path) => path.replace(/^\/api/, '/api/v1/service'),
+    //   }
+    // }
   },
 })
