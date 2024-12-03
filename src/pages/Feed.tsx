@@ -3,6 +3,9 @@ import { Link } from "react-router-dom";
 import { useUser } from "../components/UserContext";
 import apiClient from "../service/apiClient";
 import debounce from "lodash/debounce";
+import { Client, Stomp } from '@stomp/stompjs';
+import SockJS from 'socketjs-client';
+import { AddIcon } from "../icons/Material";
 
 interface Board {
     board_id: number;
@@ -22,10 +25,21 @@ const Feed: React.FC = () => {
     const{ user } = useUser();
     const containerRef = useRef<HTMLDivElement>(null); // 스크롤 컨테이너 참조용
 
+    
     // useEffect는 1회성 함수이다.
     // 처음 페이지가 호출될 때 실행되고 작업을 처리한 뒤 만약 상태를 저장하는 작업을 진행했을 경우
     // 페이지가 렌더링되는것을 캐치한 뒤 다시 실행하는? 뭐 그런거라네
     useEffect(() => {
+        const container = containerRef.current;
+        const client = new Client({
+            brokerURL: import.meta.env.VITE_WS_BASE_URL,
+            reconnectDelay: 5000,
+            connectHeaders: {
+                token: user?.token ? user.token : '',
+                call_url: "/ws",
+                call_method: "WS"
+            }
+        });
         if(user?.user_id && user?.token && !loading)
         {
             getBoard(
@@ -34,9 +48,47 @@ const Feed: React.FC = () => {
                 board.length > 0 
                     ? Math.min(...board.map((item: { board_id: number}) => item.board_id))
                     : '');
-            setLoading(true);
+            client
+                .onConnect = () => {
+                    // console.log('Connected');
+                    try{
+                        client.subscribe('/board/all', (message) => {
+                            if (message.body) {
+                                const newMessage: Board = JSON.parse(message.body);
+                                newMessage.create_time = "방금전";
+                                setBoard((prevMessages) => [newMessage, ...prevMessages]);
+                            }
+                        });
+                    }
+                    catch( error )
+                    {
+                        console.error("error : ", error);
+                    }
+                    // 개인 채널 구독
+                    client.subscribe('/board/friends:'+user.user_id, (message) => {
+                        if (message.body) {
+                            const newMessage: Board = JSON.parse(message.body);
+                            console.log("Friends = ",newMessage);
+                            setBoard((prevMessages) => [newMessage, ...prevMessages]);
+                        }
+                    });
+                    client.subscribe('/board/community:'+user.user_id, (message) => {
+                        if (message.body) {
+                            const newMessage: Board = JSON.parse(message.body);
+                            console.log("Commu = ", newMessage);
+                            setBoard((prevMessages) => [newMessage, ...prevMessages]);
+                        }
+                    });
+                };
+            client.onStompError = (err) => {
+                console.error("Stomp Error", err);
+            }
+            client.onDisconnect = () => {
+                console.log("Disconnected");
+            }
+            client.activate();
         }
-        const container = containerRef.current;
+        
         if( container )
         {
             container.addEventListener("scroll", handleScroll);
@@ -47,6 +99,10 @@ const Feed: React.FC = () => {
             {
                 container.removeEventListener("scroll", handleScroll);
             }
+            if( client )
+            {
+                client.deactivate();
+            }
         }
     }, [user]);
     const getBoard = (user_id: string, token: string, board_id? : number | '') => {
@@ -55,16 +111,18 @@ const Feed: React.FC = () => {
         // console.log(loading);
         if(!hasMore || loading)
         {
-            console.log("안돼용");
+            // console.log("안돼용");
             return;
         }
+        setLoading(true);
+        // console.log("가냐?")
             apiClient
                     .post(
                         "/api/v1/service",
                         {
                             Body : {
                                 user_id: user_id,
-                                limit: 2,
+                                limit: 10,
                                 board_id: board_id,
                             }
                         },
@@ -128,8 +186,8 @@ const Feed: React.FC = () => {
         {
             const { scrollTop, scrollHeight, clientHeight } = containerRef.current;
             // console.log("check");
-            // console.log((scrollTop + clientHeight) + "-" + ((scrollHeight - 10)));
-            if( scrollTop + clientHeight >= scrollHeight - 10 )
+            // console.log((scrollTop + clientHeight) + "-" + ((scrollHeight - 100)));
+            if( scrollTop + clientHeight >= scrollHeight - 100 )
             {
                 if(user?.user_id && user?.token && board !== null && !loading)
                 {
@@ -154,27 +212,41 @@ const Feed: React.FC = () => {
     // if(loading) return <p>Loading...</p>;
     // if(error) return <p>{error}</p>;
     return (
-        <div ref={containerRef} style={{ height: "500px", overflowY: "auto", border: "1px solid black"}}>
-            <h1>Welcome to the mydays Feed Page!</h1>
-            <Link to="/todolist">Todolist</Link>
-            <hr />
-            <Link to="/viteintro">viteintro</Link>
-            <hr />
-            {board && Array.isArray(board) && (
-                <ul>
-                    {board.map((item: any, index: number) => (
-                        <li key={index}>
-                            <p>{item.board_id}</p>
-                            <p>{item.user_id}</p>
-                            <p>{item.scope_of_disclosure}</p>
-                            <p>{item.create_time}</p>
-                            <p>{item.fulfillment_time}</p>
-                            <p>{item.content}</p>
-                            <p>{item.update_time}</p>
-                        </li>
-                    ))}
-                </ul>
-            )}
+        <div>
+            <div ref={containerRef} style={{ height: "1000px", overflowY: "auto", border: "1px solid black", position: "relative"}}>
+                <h1>Welcome to the mydays Feed Page!</h1>
+                <Link to="/todolist">Todolist</Link>
+                <hr />
+                <Link to="/viteintro">viteintro</Link>
+                <hr />
+                {board && Array.isArray(board) && (
+                    <ul>
+                        {board.map((item: any, index: number) => (
+                            <li key={index}>
+                                <p>{item.board_id}</p>
+                                <p>{item.user_id}</p>
+                                <p>{item.scope_of_disclosure}</p>
+                                <p>{item.create_time}</p>
+                                <p>{item.fulfillment_time}</p>
+                                <p>{item.content}</p>
+                                <p>{item.update_time}</p>
+                            </li>
+                        ))}
+                    </ul>
+                )}
+            </div>
+            <Link to="/write">
+                <button 
+                    style={{
+                    position: "fixed", // div 내에서 고정
+                    bottom: "3rem", // div의 top에서부터 간격
+                    right: "3rem", // div의 right에서부터 간격
+                    zIndex: 1000 // 버튼이 내용보다 위로 올라오도록 설정
+                    }}
+                >
+                    <AddIcon />
+                </button>
+            </Link>
         </div>
     );
 };
