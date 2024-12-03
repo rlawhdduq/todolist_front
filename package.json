@@ -10,13 +10,19 @@
     "preview": "vite preview"
   },
   "dependencies": {
+    "@emotion/react": "^11.13.5",
+    "@emotion/styled": "^11.13.5",
+    "@mui/icons-material": "^6.1.9",
+    "@stomp/stompjs": "^7.0.0",
     "@types/lodash": "^4.17.13",
     "axios": "^1.7.8",
     "lodash": "^4.17.21",
     "path": "^0.12.7",
     "react": "^18.3.1",
     "react-dom": "^18.3.1",
-    "react-router-dom": "^6.28.0"
+    "react-router-dom": "^6.28.0",
+    "react-select": "^5.8.3",
+    "socketjs-client": "^1.0.2"
   },
   "devDependencies": {
     "@eslint/js": "^9.13.0",
