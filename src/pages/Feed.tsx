@@ -4,8 +4,8 @@ import { useUser } from "../components/UserContext";
 import apiClient from "../service/apiClient";
 import debounce from "lodash/debounce";
 import { Client, Stomp } from '@stomp/stompjs';
-import SockJS from 'socketjs-client';
-import { AddIcon } from "../icons/Material";
+import { AddIcon } from "../utils/Material";
+import { enc } from "../utils/cryption";
 
 interface Board {
     board_id: number;
@@ -222,7 +222,8 @@ const Feed: React.FC = () => {
                 {board && Array.isArray(board) && (
                     <ul>
                         {board.map((item: any, index: number) => (
-                            <li key={index}>
+                            <li key={item.board_id}>
+                                <Link to={`/detail?id=${item.board_id}`}>
                                 <p>{item.board_id}</p>
                                 <p>{item.user_id}</p>
                                 <p>{item.scope_of_disclosure}</p>
@@ -230,6 +231,7 @@ const Feed: React.FC = () => {
                                 <p>{item.fulfillment_time}</p>
                                 <p>{item.content}</p>
                                 <p>{item.update_time}</p>
+                                </Link>
                             </li>
                         ))}
                     </ul>
