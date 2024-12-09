@@ -12,6 +12,7 @@ import ViteIntro from "./test/ViteIntro";
 import Login from "./pages/Login";
 import Write from "./pages/board/Write";
 import Detail from "./pages/board/Detail";
+import Join from "./pages/join/Join";
 
 // import "./App.css";
 
@@ -23,6 +24,7 @@ const App: React.FC = () => {
       <Routes>
         {/* 로그인 페이지 */}
         <Route path="/login" element={<IsLogin />} />
+        <Route path="/join" element={<IsJoin />}/>
 
         {/* 로그인 후 접근할 수 있는 페이지 */}
         <Route path="/search" element={<PrivateRoute component={Search} />} />
@@ -44,6 +46,11 @@ const App: React.FC = () => {
 const IsLogin: React.FC = () => {
   const{ user }  = useUser();
   return user ? <Navigate to ="/" /> : <Login />;
+}
+
+const IsJoin: React.FC = () => {
+  const{ user } = useUser();
+  return user ? <Navigate to ="/" /> : <Join />;
 }
 type PrivateRouteProps = {
   component: React.ComponentType;
