@@ -111,6 +111,7 @@ const Login: React.FC = () => {
                 />
             </div>
             <button type="submit" disabled={loading}>{loading ? "로그인 중..." : "로그인"}</button>
+            <Link to="/join"><button type="button">회원가입</button></Link>
         </form>
     </div>
     );
