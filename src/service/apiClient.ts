@@ -2,7 +2,7 @@ import axios from "axios";
 
 const apiClient = axios.create({
     // baseURL: import.meta.env.VITE_BASE_URL || 'http://localhost',
-    baseURL: 'http://gateway:8988',
+    baseURL: 'http://localhost',
     timeout: 5000,
     headers: {
         "Content-Type": "application/json", // 공통 요청 헤더타입 설정
