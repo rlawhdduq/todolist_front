@@ -4,7 +4,7 @@ import { useUser } from "./UserContext";
 import { useNavigate } from "react-router-dom";
 
 const Navbar: React.FC = () => {
-    const{ user, logout } = useUser();
+    const{ logout } = useUser();
     const navigator = useNavigate();
     
     const handleLogout = () => {

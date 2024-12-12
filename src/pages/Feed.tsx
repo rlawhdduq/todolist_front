@@ -3,9 +3,8 @@ import { Link } from "react-router-dom";
 import { useUser } from "../components/UserContext";
 import apiClient from "../service/apiClient";
 import debounce from "lodash/debounce";
-import { Client, Stomp } from '@stomp/stompjs';
+import { Client } from '@stomp/stompjs';
 import { AddIcon } from "../utils/Material";
-import { enc } from "../utils/cryption";
 
 interface Board {
     board_id: number;
@@ -17,10 +16,8 @@ interface Board {
     update_time: string;
 }
 const Feed: React.FC = () => {
-    let cnt = 0;
     const[ board, setBoard ] = useState<Board[]>([]);
     const[ loading, setLoading ] = useState<boolean>(false);
-    const[ error, setError ] = useState<String | null>(null);
     const[ hasMore, setHasMore ] = useState<boolean>(true);
     const{ user } = useUser();
     const containerRef = useRef<HTMLDivElement>(null); // 스크롤 컨테이너 참조용
@@ -50,7 +47,6 @@ const Feed: React.FC = () => {
                     : '');
             client
                 .onConnect = () => {
-                    // console.log('Connected');
                     try{
                         client.subscribe('/board/all', (message) => {
                             if (message.body) {
@@ -106,16 +102,11 @@ const Feed: React.FC = () => {
         }
     }, [user]);
     const getBoard = (user_id: string, token: string, board_id? : number | '') => {
-        // console.log("cnt = ", cnt);
-        // cnt++;
-        // console.log(loading);
         if(!hasMore || loading)
         {
-            // console.log("안돼용");
             return;
         }
         setLoading(true);
-        // console.log("가냐?")
             apiClient
                     .post(
                         "/api/v1/service",
@@ -137,31 +128,22 @@ const Feed: React.FC = () => {
                             
                             if( response.data !== null && response.data.length > 0)
                             {
-                                // console.log("respose", response);
                                 setBoard((prevBoard) => {
                                     const newBoard = [...prevBoard, ...response.data];
 
-                                    // console.log("prev = ",prevBoard);
-                                    // console.log("response = ",response.data);
                                     const prevBoardIds = prevBoard.map((item: { board_id: number}) => item.board_id);
                                     const responseBoardIds = response.data.map((item: { board_id: number}) => item.board_id);
 
                                     const min = prevBoardIds.length > 0 ? Math.min(...prevBoardIds) : Number.MAX_SAFE_INTEGER;
                                     const max = responseBoardIds.length > 0 ? Math.max(...responseBoardIds) : Number.MAX_SAFE_INTEGER;
 
-                                    // console.log("min = "+min);
-                                    // console.log("max = "+max);
                                     if( min > max )
                                     {
-                                        // console.log("cnt = ", cnt);
-                                        // console.log("추가한다");
                                         setHasMore(true);
                                         return newBoard;
                                     }
                                     else
                                     {
-                                        // console.log("cnt = ", cnt);
-                                        // console.log("방패가동");
                                         setHasMore(false);
                                         return prevBoard;
                                     }
@@ -169,7 +151,6 @@ const Feed: React.FC = () => {
                             }
                             else
                             {
-                                // console.log("false설정")
                                 setHasMore(false);
                             }
                             setLoading(false);
@@ -185,19 +166,14 @@ const Feed: React.FC = () => {
         if( containerRef.current )
         {
             const { scrollTop, scrollHeight, clientHeight } = containerRef.current;
-            // console.log("check");
-            // console.log((scrollTop + clientHeight) + "-" + ((scrollHeight - 100)));
             if( scrollTop + clientHeight >= scrollHeight - 100 )
             {
                 if(user?.user_id && user?.token && board !== null && !loading)
                 {
                     const user_id = user.user_id;
                     const token = user.token;
-                    // console.log("간닷");
                     setBoard(prevBoard => {
-                        // console.log("prevBoard = ", prevBoard);
                         const minBoardNumber = Math.min(...prevBoard.map((item: { board_id: number; }) => item.board_id));
-                        // console.log("넘긴다 board = ",(minBoardNumber === Infinity ? '' : minBoardNumber));
                         getBoard(user_id, token, minBoardNumber === Infinity ? '' : minBoardNumber);
                         return prevBoard;
                     });
@@ -209,8 +185,6 @@ const Feed: React.FC = () => {
             }
         }
     }, 500);
-    // if(loading) return <p>Loading...</p>;
-    // if(error) return <p>{error}</p>;
     return (
         <div>
             <div ref={containerRef} style={{ height: "1000px", overflowY: "auto", border: "1px solid black", position: "relative"}}>
@@ -221,7 +195,7 @@ const Feed: React.FC = () => {
                 <hr />
                 {board && Array.isArray(board) && (
                     <ul>
-                        {board.map((item: any, index: number) => (
+                        {board.map((item: any) => (
                             <li key={item.board_id}>
                                 <Link to={`/detail?id=${item.board_id}`}>
                                 <p>{item.board_id}</p>
