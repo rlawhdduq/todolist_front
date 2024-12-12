@@ -24,7 +24,7 @@ jobs:
             ls -al
             echo "${{ secrets.SSH_PRIVATE_KEY }}" | tr -d '\r' > private_key.pem
             chmod 600 private_key.pem
-            scp -o StrictHostKeyChecking=no -i private_key.pem -P 2222 dist/* ubuntukjy@${{ secrets.HOST_IP }}:/spring/docker/compose/front/dist
+            scp -o StrictHostKeyChecking=no -i private_key.pem -P 2222 -r dist/* ubuntukjy@${{ secrets.HOST_IP }}:/spring/docker/compose/front/dist
             
       # - name: Set SSH ssh-action
       #   uses: appleboy/ssh-action@master
