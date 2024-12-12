@@ -1,0 +1,46 @@
+name: Build and Deploy Vite+React Application via SSH
+
+on:
+  push:
+    branches:
+      - main  # 타겟 브랜치
+      
+jobs:
+  build:
+    runs-on: ubuntu-latest # Ubunt로 실행
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v3
+        
+      - name: Build React app
+        run: |
+            npm install
+            npm run build
+            
+      - name: Deploy dist Directory
+        run: |
+            pwd
+            ls -al
+            echo "${{ secrets.SSH_PRIVATE_KEY }}" | tr -d '\r' > private_key.pem
+            chmod 600 private_key.pem
+            scp -o StrictHostKeyChecking=no -i private_key.pem -P 2222 $GITHUB_WORKSPACE/dist/* ubuntukjy@${{ secrets.HOST_IP }}:/spring/docker/compose/front/dist
+            
+      # - name: Set SSH ssh-action
+      #   uses: appleboy/ssh-action@master
+      #   with:
+      #     host: ${{ secrets.HOST_IP }}
+      #     username: ubuntukjy
+      #     key: ${{ secrets.SSH_PRIVATE_KEY }}
+      #     port: 2222
+      #     script: |
+      #             # 이건 ssh연결 된 상태에서 실행되는거라 추후에 dockerfile build나 이런거 할 때 여기에 명령어 작성하면 될듯 아래 명령어들은 다 쓰레기임
+      #             echo " ====== "
+      #             echo "start"
+      #             echo "${{ secrets.SSH_PRIVATE_KEY }}" | tr -d '\r\' > private_key.pem
+      #             chmod 600 private_key.pem
+      #             ls -l private_key.pem
+      #             echo "private_key"
+      #             cat private_key.pem
+      #             scp -o StrictHostKeyChecking=no -i private_key.pem -P 2222 $GITHUB_WORKSPACE/build/libs/*.jar ubuntukjy@${{ secrets.HOST_IP }}:/spring/docker/compose/board/jar
+      #             echo "end"
