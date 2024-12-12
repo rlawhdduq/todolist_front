@@ -1,9 +1,8 @@
 import { useEffect, useState } from "react";
-import { dec } from "../../utils/cryption";
-import { useParams, Link } from "react-router-dom";
+import { Link } from "react-router-dom";
 import apiClient from "../../service/apiClient";
 import { useUser } from "../../components/UserContext";
-import { useNavigate, useLocation } from "react-router-dom";
+import { useLocation } from "react-router-dom";
 
 interface Board {
     board_id:           number;
@@ -53,11 +52,6 @@ const Detail:React.FC = () => {
             localStorage.setItem("boardId", id);
         }
     }, [id]);
-
-    const storedId                  = localStorage.getItem("boardId");
-    console.log("storedId = ", storedId);
-    console.log("decId = ", decId);
-    console.log("id = ", id);
 
     useEffect(() => {
         apiClient.post(
@@ -116,7 +110,7 @@ const Detail:React.FC = () => {
             ?
                 <div>
                     <ul>
-                        {todolist.map((todo: Todolist, index: number) => (
+                        {todolist.map((todo: Todolist) => (
                             <li key={todo.todolist_id}>
                                 <p>{todo.todolist_id}</p>
                                 <p>{todo.create_time}</p>
@@ -138,7 +132,7 @@ const Detail:React.FC = () => {
             ?
                 <div>
                     <ul>
-                        {reply?.map((rep: Reply, index: number) => (
+                        {reply?.map((rep: Reply) => (
                         <li>
                             <p>{rep.reply_id}</p>
                             <p>{rep.board_id}</p>

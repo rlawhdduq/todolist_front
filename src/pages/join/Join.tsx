@@ -1,11 +1,11 @@
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import apiClient from "../../service/apiClient";
 import { useUser } from "../../components/UserContext";
 import Select from "react-select";
 
 
 const Join: React.FC = () => {
-    const{user,  setUserSession} = useUser();
+    const{ setUserSession } = useUser();
 
     const[ id, setId ] = useState<string>('');
     const[ pw, setPw ] = useState<string>('');
@@ -84,7 +84,7 @@ const Join: React.FC = () => {
             setToken(responseData.user_id, responseData.id, responseData.user_type);
         })
         .catch(err => {
-            alert("서버에서 오류가 발생했습니다.");
+            console.error("Error = ", err);
         });
         isLoading(false);
     }

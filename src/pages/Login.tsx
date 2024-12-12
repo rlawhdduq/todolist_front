@@ -1,11 +1,11 @@
-import React, { useState, useEffect } from "react";
+import React, { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { useUser } from "../components/UserContext";
 import apiClient from "../service/apiClient";
 
 const Login: React.FC = () => {
     const[error, setError] = useState<string>('');
-    const{user,  setUserSession} = useUser();
+    const{ setUserSession } = useUser();
     const[id, setId] = useState<string>('');
     const[password, setPassword] = useState<string>('');
     const[loading, isLoading] = useState<boolean>(false);
@@ -37,7 +37,7 @@ const Login: React.FC = () => {
                 });
             })
             .catch(err => {
-                setError("인증요청 실패");
+                console.error("Error =", err)
             })
     }
     const handleLogin = (e: React.FormEvent) => {

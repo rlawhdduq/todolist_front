@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React from "react";
 import { BrowserRouter as Router, Routes, Route, Navigate } from "react-router-dom";
 
 import Navbar from "./components/Navbar";
@@ -57,7 +57,7 @@ type PrivateRouteProps = {
 }
 
 const PrivateRoute: React.FC<PrivateRouteProps> = ({ component: Component }) => {
-  const{ user, loading } = useUser();
+  const{ user } = useUser();
   return user !== null ? <Component /> : <Navigate to="/login" />;
 };
 

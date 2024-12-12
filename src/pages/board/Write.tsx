@@ -3,7 +3,6 @@ import { useNavigate, useParams } from "react-router-dom";
 import { useUser } from "../../components/UserContext";
 import apiClient from "../../service/apiClient";
 import Select from "react-select";
-import { dec } from "../../utils/cryption";
 
 interface Todolist{
     todolist_id?: number;
@@ -18,13 +17,13 @@ const TodoComponent: React.FC<{
     todo: Todolist;
     onChange: (id:number, updateTodo: Todolist) => void;
     onRemove: (id:number, todolist_id?: number) => void;
-    onCheck: (id:number, event:React.ChangeEvent<HTMLInputElement>) => void;
+    onCheck: (event:React.ChangeEvent<HTMLInputElement>) => void;
 }> = ({ id, todo, onChange, onRemove, onCheck }) => {
     const handleInputChange = (field: keyof Todolist, value: string | number) => {
         onChange(id, {...todo, [field]: value});
     };
-    const handleTodoCheck = (id:number, event: React.ChangeEvent<HTMLInputElement>) => {
-        onCheck(id, event);
+    const handleTodoCheck = (event: React.ChangeEvent<HTMLInputElement>) => {
+        onCheck(event);
     };
 
     return(
@@ -33,7 +32,7 @@ const TodoComponent: React.FC<{
                 <input
                     type="checkbox"
                     data-key={todo.todolist_id}
-                    onChange={(e) => handleTodoCheck(id, e)}
+                    onChange={(e) => handleTodoCheck(e)}
                 />
             </label>
             <label htmlFor={`todo_type_${id}`}>유형</label>
@@ -75,12 +74,12 @@ const TodoComponent: React.FC<{
 
 const Write: React.FC = () => {
     const[ todos, setTodo ] = useState<Todolist[]>([]);
-    const[ error, setError ] = useState<string>('');
-    const{ user,  setUserSession } = useUser();
+    const[ , setError ] = useState<string>('');
+    const{ user } = useUser();
     const[ scopeOptions, setOptions ] = useState<any[]>([]);
     const[ content, setContent ] = useState<string>('');
     const[ scope, setScope ] = useState<string>('');
-    const[ loading, isLoading ] = useState<boolean>(false);
+    const[ , isLoading ] = useState<boolean>(false);
     const{ postId } = useParams<{ postId: string }>();
     const[ isEditMode, setIsEditMode ] = useState<boolean>(false);
     const[ selectTodoKeys, setSelectTodoKeys ] = useState<number[]>([]);
@@ -126,7 +125,7 @@ const Write: React.FC = () => {
         }
     }
 
-    const todoCheckBoxControl = (id: number, event: React.ChangeEvent<HTMLInputElement>) => {
+    const todoCheckBoxControl = (event: React.ChangeEvent<HTMLInputElement>) => {
         const checked  = event.target.checked;
         if( postId )
         {
