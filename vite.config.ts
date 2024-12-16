@@ -5,7 +5,6 @@ import react from '@vitejs/plugin-react-swc'
 export default defineConfig({
   plugins: [react()],
   server: {
-    port: 8989,
     watch: {
       usePolling: true, // 파일 변경 감지를 위해 폴링 사용
     },
