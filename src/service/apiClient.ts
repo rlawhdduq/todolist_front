@@ -6,8 +6,7 @@ const apiClient = axios.create({
     timeout: 5000,
     headers: {
         "Content-Type": "application/json", // 공통 요청 헤더타입 설정
-    },
-    withCredentials: true
+    }
 });
 apiClient.interceptors.request.use((config) => {
     console.log("Request: ", config);
