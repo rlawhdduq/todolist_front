@@ -47,6 +47,7 @@ const Feed: React.FC = () => {
                     : '');
             client
                 .onConnect = () => {
+                    console.log("onConnect");
                     try{
                         client.subscribe('/board/all', (message) => {
                             if (message.body) {
