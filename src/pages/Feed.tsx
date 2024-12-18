@@ -63,6 +63,7 @@ const Feed: React.FC = () => {
                     }
                     // 개인 채널 구독
                     client.subscribe('/board/friends:'+user.user_id, (message) => {
+                        console.log("onFriends");
                         if (message.body) {
                             const newMessage: Board = JSON.parse(message.body);
                             console.log("Friends = ",newMessage);
@@ -70,6 +71,7 @@ const Feed: React.FC = () => {
                         }
                     });
                     client.subscribe('/board/community:'+user.user_id, (message) => {
+                        console.log("onCommunity");
                         if (message.body) {
                             const newMessage: Board = JSON.parse(message.body);
                             console.log("Commu = ", newMessage);
