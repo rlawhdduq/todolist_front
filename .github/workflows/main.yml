@@ -4,7 +4,7 @@ on:
   push:
     branches:
       - main  # 타겟 브랜치
-      
+       
 jobs:
   build:
     runs-on: ubuntu-latest # Ubunt로 실행
