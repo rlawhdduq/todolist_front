@@ -73,7 +73,7 @@ const Profile: React.FC = () => {
                     팔로잉 수 : {loginUser.number_of_following}
                 </p>
                 <br/>
-                {!isMyProfile? ( <div><button>팔로우</button><button>팔로우취소</button></div> ) : (null)}
+                {isMyProfile? (null) : ( <div><button>팔로우</button><button>팔로우취소</button></div> )}
                 </div>
             )
             : (
