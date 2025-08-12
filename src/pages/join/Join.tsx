@@ -46,7 +46,9 @@ const Join: React.FC = () => {
                 user_id: user_id,
                 id: id,
                 user_type: user_type,
-                token: response.data
+                token: response.data,
+                number_of_following: '',
+                number_of_follower: '',
             })
         })
         .catch()
