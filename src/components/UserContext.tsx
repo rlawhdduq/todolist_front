@@ -1,8 +1,8 @@
 import React, {createContext, useContext, useEffect, useState} from "react";
 
 type UserContextType = {
-    user: { user_id?: string; id?: string; user_type?: string; token: string | null } | null;
-    setUserSession: (user: { user_id?: string; id?: string; user_type?: string; token: string | null }) => void;
+    user: { user_id?: string; id?: string; user_type?: string; token: string | null; number_of_following: string; number_of_follower: string; } | null;
+    setUserSession: (user: { user_id?: string; id?: string; user_type?: string; token: string | null; number_of_following: string; number_of_follower: string; }) => void;
     logout: () => void
     loading: boolean;
 };

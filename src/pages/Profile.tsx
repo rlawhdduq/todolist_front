@@ -8,7 +8,15 @@ const Profile: React.FC = () => {
             <h1>사용자 정보 /</h1>
             {user 
             ? (
-                <p>안녕하세요, {user.id}님! <br/> 회원유형 : {user.user_type}</p>
+                <p>
+                    안녕하세요, {user.id}님! 
+                    <br/> 
+                    회원유형 : {user.user_type}
+                    <br/>
+                    팔로워 수 : {user.number_of_follower}
+                    <br/>
+                    팔로잉 수 : {user.number_of_following}
+                </p>
             )
             : (
                 <p>로그인해주세요</p>
