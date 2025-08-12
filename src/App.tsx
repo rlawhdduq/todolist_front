@@ -29,6 +29,7 @@ const App: React.FC = () => {
         {/* 로그인 후 접근할 수 있는 페이지 */}
         <Route path="/search" element={<PrivateRoute component={Search} />} />
         <Route path="/profile" element={<PrivateRoute component={Profile} />} />
+        <Route path="/profile/:viewUserId" element={<PrivateRoute component={Profile} />} />
         <Route path="/todolist" element={<PrivateRoute component={Todolist} />} />
         <Route path="/viteintro" element={<PrivateRoute component={ViteIntro} />} />
         <Route path="/write" element={<PrivateRoute component={Write} />} />
