@@ -11,7 +11,7 @@ const Login: React.FC = () => {
     const[loading, isLoading] = useState<boolean>(false);
     const navigate = useNavigate();
 
-    const setToken = (user_id: string, id: string, user_type: string) => {
+    const setToken = (user_id: string, id: string, user_type: string, number_of_following: string, number_of_follower: string) => {
         apiClient.post(
             "/api/v1/service",
             {
@@ -34,8 +34,8 @@ const Login: React.FC = () => {
                     id: id,
                     user_type: user_type,
                     token: response.data,
-                    number_of_following: '',
-                    number_of_follower: '',
+                    number_of_following: number_of_following,
+                    number_of_follower: number_of_follower,
                 });
             })
             .catch(err => {
@@ -66,15 +66,7 @@ const Login: React.FC = () => {
                 const responseBody = response.data;
                 if(responseBody !== "")
                 {
-                    setUserSession({
-                        user_id: responseBody.user_id || '',
-                        id: responseBody.id || '',
-                        user_type: responseBody.user_type || '',
-                        token: '',
-                        number_of_following: responseBody.number_of_following || '',
-                        number_of_follower: responseBody.number_of_follower || '',
-                    });
-                    setToken(responseBody.user_id, responseBody.id, responseBody.user_type);
+                    setToken(responseBody.user_id, responseBody.id, responseBody.user_type, responseBody.number_of_following, responseBody.number_of_follower);
                     navigate("/");
                 }
                 else
