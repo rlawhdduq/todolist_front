@@ -17,13 +17,11 @@ const Profile: React.FC = () => {
     const{ viewUserId } = useParams<{ viewUserId: string }>();
 
     const[ viewUserInfo, setViewUserInfo ] = useState<ViewUserInfo | null>(null);
-    const[ loading, isLoading ] = useState<boolean>(false);   
 
     useEffect(() => {
         // 보여줄 최종 user_id를 결정하는 로직
         if(viewUserId)
         {
-            isLoading(true);
             apiClient.post(
             "/api/v1/service",
             {
@@ -54,7 +52,6 @@ const Profile: React.FC = () => {
                 console.error("Error : ", err);
             })
             .finally(() => {
-                isLoading(false);
             });
         }
     }, [viewUserId, loginUser]);
