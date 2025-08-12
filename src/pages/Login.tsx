@@ -34,6 +34,8 @@ const Login: React.FC = () => {
                     id: id,
                     user_type: user_type,
                     token: response.data,
+                    number_of_following: '',
+                    number_of_follower: '',
                 });
             })
             .catch(err => {
@@ -68,7 +70,9 @@ const Login: React.FC = () => {
                         user_id: responseBody.user_id || '',
                         id: responseBody.id || '',
                         user_type: responseBody.user_type || '',
-                        token: ''
+                        token: '',
+                        number_of_following: responseBody.number_of_following || '',
+                        number_of_follower: responseBody.number_of_follower || '',
                     });
                     setToken(responseBody.user_id, responseBody.id, responseBody.user_type);
                     navigate("/");
