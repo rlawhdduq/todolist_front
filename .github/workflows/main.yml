@@ -13,16 +13,27 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@v3
         
-      - name: Build React app
-        run: |
-            npm install
-            npm run build
-            
-      - name: Deploy dist Directory
-        run: |
-            echo "${{ secrets.SSH_PRIVATE_KEY }}" | tr -d '\r' > private_key.pem
-            chmod 600 private_key.pem
-            scp -o StrictHostKeyChecking=no -i private_key.pem -P 2222 -r dist/* ubuntukjy@${{ secrets.HOST_IP }}:/spring/docker/compose/front/dist
+      # - name: Build React app
+      #   run: |
+      #       npm install
+      #       npm run build
+      # 빌드를 도커 안에서 하게 수정
+      
+      # - name: Deploy dist Directory
+      #   run: |
+      #       echo "${{ secrets.SSH_PRIVATE_KEY }}" | tr -d '\r' > private_key.pem
+      #       chmod 600 private_key.pem
+      #       scp -o StrictHostKeyChecking=no -i private_key.pem -P 2222 -r dist/* ubuntukjy@${{ secrets.HOST_IP }}:/spring/docker/compose/front/dist
+      # 소스파일 옮기는 방식을 scp에서 전용 액션을 사용하는 방법으로 변경(이게 더 깔끔하고 안전, dockerignore 파일을 이용해 불필요한 파일 전송을 막을 수 있음)
+      - name : Deploy Source Code
+        uses: appleboy/scp-action@master
+        with:
+          host: ${{ secrets.HOST_IP }}
+          username: ubuntukjy
+          key: ${{ secrets.SSH_PRIVATE_KEY }}
+          port: 2222
+          source: "./" # 현재 디렉토리 전체
+          target: "/spring/docker/compose/front" # front 프로젝트 루트 디렉토리
             
       - name: Set SSH ssh-action
         uses: appleboy/ssh-action@master
